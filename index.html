@@ -20,22 +20,13 @@
             transform: translateY(-4px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        /* Ensure the modal is full-width on mobile */
-        #notification-modal > div {
-            max-width: 90%;
-        }
     </style>
 </head>
 <body class="p-4 sm:p-8">
 
-    <div id="loading-indicator" class="text-center py-20">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Loading dashboard and connecting to database...</p>
-    </div>
+    <div id="app-container" class="max-w-7xl mx-auto">
 
-    <div id="app-container" class="hidden max-w-7xl mx-auto">
-
-        <!-- Header: RENAMED TO UNIFIED AIMZ TOOLS -->
+        <!-- Header: UNIFIED AIMZ TOOLS -->
         <header class="text-center mb-8 sm:mb-12">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
                 UNIFIED AIMZ TOOLS
@@ -45,18 +36,9 @@
             </p>
         </header>
 
-        <!-- Tool Grid: Now uses 1 column on mobile, 2 columns on small screens, and a consistent 3 columns on medium/large screens -->
+        <!-- Tool Grid: Uses 1 col mobile, 2 col small screens, and a consistent 3 columns medium/large screens -->
         <div id="tool-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            <!-- Tool cards will be generated here -->
-        </div>
-
-        <!-- Notification Modal (Custom Alert) -->
-        <div id="notification-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
-            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform transition-all scale-100 duration-300">
-                <h3 id="modal-title" class="text-xl font-bold mb-3 text-red-600">Error</h3>
-                <p id="modal-message" class="text-gray-700 mb-4">An unexpected error occurred.</p>
-                <button id="modal-close-btn" class="w-full bg-indigo-600 text-white p-2 rounded-lg font-semibold hover:bg-indigo-700 transition">Close</button>
-            </div>
+            <!-- Tool cards will be generated here by JavaScript -->
         </div>
         
         <!-- FOOTER CREDIT -->
@@ -69,81 +51,45 @@
 
     </div>
 
-    <!-- Firebase Imports and Setup -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase variables are provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let app, db, auth, userId;
-        const COLLECTION_NAME = 'tool_links';
-        const DOCUMENT_ID = 'master_tools_list'; // Single document to hold all links
-
-        // Updated initialLinks array with slots 13-16 removed (12 items total)
-        const initialLinks = [
-            { title: "PDF & IMAGE TOOL", url: "https://pdfimg.netlify.app", icon: "📄" },
-            { title: "EID PHOTO LEMINATION TOOL", url: "https://eidlemi.netlify.app", icon: "💳" },
-            { title: "PDF EDITOR (Under Dev.)", url: "https://propdf.netlify.app", icon: "✏️" },
-            { title: "EID PHOTO VERIFY", url: "https://iaco.netlify.app/", icon: "✅" },
-            { title: "ICO PHOTO TOOL", url: "https://icophoto.netlify.app", icon: "🖼️" },
-            { title: "REMIT BD", url: "https://remitbd.netlify.app/", icon: "💰" },
-            { title: "New Tool Slot 7 (Blank)", url: "", icon: "🔗" },
-            { title: "New Tool Slot 8 (Blank)", url: "", icon: "🔗" },
-            { title: "New Tool Slot 9 (Blank)", url: "", icon: "🔗" },
-            { title: "New Tool Slot 10 (Blank)", url: "", icon: "🔗" },
-            { title: "New Tool Slot 11 (Blank)", url: "", icon: "🔗" },
-            { title: "New Tool Slot 12 (Blank)", url: "", icon: "🔗" },
+    <!-- Core JavaScript for hardcoded links and rendering -->
+    <script>
+        // Hardcoded tool list (database removed)
+        const currentLinks = [
+            { id: 'link_01', title: "PDF & IMAGE TOOL", url: "https://pdfimg.netlify.app", icon: "📄" },
+            { id: 'link_02', title: "EID PHOTO LEMINATION TOOL", url: "https://eidlemi.netlify.app", icon: "💳" },
+            { id: 'link_03', title: "PDF EDITOR (Under Dev.)", url: "https://propdf.netlify.app", icon: "✏️" },
+            { id: 'link_04', title: "EID PHOTO VERIFY", url: "https://iaco.netlify.app/", icon: "✅" },
+            { id: 'link_05', title: "ICO PHOTO TOOL", url: "https://icophoto.netlify.app", icon: "🖼️" },
+            { id: 'link_06', title: "REMIT BD", url: "https://remitbd.netlify.app/", icon: "💰" },
+            { id: 'link_07', title: "New Tool Slot 7 (Blank)", url: "", icon: "🔗" },
+            { id: 'link_08', title: "New Tool Slot 8 (Blank)", url: "", icon: "🔗" },
+            { id: 'link_09', title: "New Tool Slot 9 (Blank)", url: "", icon: "🔗" },
+            { id: 'link_10', title: "New Tool Slot 10 (Blank)", url: "", icon: "🔗" },
+            { id: 'link_11', title: "New Tool Slot 11 (Blank)", url: "", icon: "🔗" },
+            { id: 'link_12', title: "New Tool Slot 12 (Blank)", url: "", icon: "🔗" },
         ];
 
-        // Prepare links, adding a unique ID for database mapping
-        let currentLinks = initialLinks.map((link, index) => ({
-            ...link,
-            id: `link_${String(index + 1).padStart(2, '0')}`,
-        }));
-
-        // --- Utility Functions ---
-
-        /** Shows a custom notification modal instead of alert() */
-        function showNotification(title, message, isError = true) {
-            const modal = document.getElementById('notification-modal');
-            const titleEl = document.getElementById('modal-title');
-            const messageEl = document.getElementById('modal-message');
-
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-            titleEl.className = `text-xl font-bold mb-3 ${isError ? 'text-red-600' : 'text-green-600'}`;
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        // --- Rendering Functions ---
-
-        /** Renders all tool cards based on the currentLinks state (Read-Only) */
+        /** Renders all tool cards based on the hardcoded currentLinks array (Read-Only) */
         function renderToolGrid() {
             const grid = document.getElementById('tool-grid');
+            if (!grid) return;
+
             grid.innerHTML = ''; // Clear existing content
 
-            currentLinks.forEach((link, index) => {
+            currentLinks.forEach((link) => {
                 const card = document.createElement('div');
                 const isActive = link.url.trim().length > 0;
 
                 card.className = `tool-card bg-white p-5 sm:p-6 rounded-xl shadow-md border-t-4 ${isActive ? 'border-indigo-500' : 'border-gray-300'}`;
-                card.id = `card-${link.id}`;
-
-                // Render content in read-only mode (No Edit Button)
+                
+                // Render content in read-only mode, opening in a new tab
                 card.innerHTML = `
                     <div class="flex items-center justify-start mb-3 sm:mb-4">
                         <span class="text-2xl sm:text-3xl">${link.icon}</span>
                     </div>
                     <h3 class="text-lg sm:text-xl font-bold ${isActive ? 'text-gray-800' : 'text-gray-400'} mb-1">${link.title}</h3>
                     <p class="text-xs text-gray-500 truncate">${isActive ? link.url : 'No URL set (Blank Slot)'}</p>
-                    <a href="${isActive ? link.url : '#'}" target="_blank" ${!isActive ? 'onclick="event.preventDefault();"' : ''} id="link-a-${link.id}"
+                    <a href="${isActive ? link.url : '#'}" target="_blank" ${!isActive ? 'onclick="event.preventDefault();"' : ''}
                         class="mt-4 inline-block w-full text-center py-2 rounded-lg font-semibold transition ${isActive
                             ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg'
                             : 'bg-gray-100 text-gray-500 cursor-not-allowed border'}"
@@ -155,104 +101,8 @@
             });
         }
 
-
-        // --- Firebase Initialization and Data Listener ---
-
-        async function initializeFirebase() {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Authenticate
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                userId = auth.currentUser?.uid;
-
-                // Start data listener
-                listenForLinks();
-
-                // Setup modal close button
-                document.getElementById('modal-close-btn').addEventListener('click', () => {
-                    document.getElementById('notification-modal').classList.remove('flex');
-                    document.getElementById('notification-modal').classList.add('hidden');
-                });
-
-                document.getElementById('loading-indicator').classList.add('hidden');
-                document.getElementById('app-container').classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Firebase Initialization Error:", error);
-                document.getElementById('loading-indicator').innerHTML = `
-                    <p class="mt-4 text-red-600 font-semibold">
-                        Error connecting to Firebase. Data persistence may not work.
-                    </p>
-                `;
-                // Render with initial data even if persistence fails
-                renderToolGrid();
-                document.getElementById('app-container').classList.remove('hidden');
-            }
-        }
-
-        function listenForLinks() {
-            const docRef = doc(db, `artifacts/${appId}/public/data/${COLLECTION_NAME}`, DOCUMENT_ID);
-
-            // Set up a real-time listener
-            onSnapshot(docRef, async (docSnapshot) => {
-                if (docSnapshot.exists()) {
-                    // Document exists, load the data
-                    const data = docSnapshot.data();
-                    let updatedLinks = currentLinks.map(link => {
-                        const savedData = data[link.id];
-                        // Update link properties from Firestore if they exist
-                        if (savedData && savedData.title && savedData.url !== undefined) {
-                            return { ...link, title: savedData.title, url: savedData.url };
-                        }
-                        return link; // Keep initial/current state if no saved data
-                    });
-                    currentLinks = updatedLinks;
-                    renderToolGrid();
-                } else {
-                    // Document doesn't exist, initialize it with the current (pre-populated) links
-                    console.log("Document does not exist. Creating initial document.");
-                    try {
-                        const initialPayload = {};
-                        currentLinks.forEach(link => {
-                            initialPayload[link.id] = { title: link.title, url: link.url };
-                        });
-                        // Use a simple retry mechanism
-                        const MAX_RETRIES = 3;
-                        let success = false;
-                        for (let i = 0; i < MAX_RETRIES; i++) {
-                            try {
-                                await setDoc(docRef, initialPayload);
-                                success = true;
-                                break;
-                            } catch (error) {
-                                console.warn(`Attempt ${i + 1} failed to create initial document:`, error);
-                                await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
-                            }
-                        }
-
-                        if (!success) {
-                             throw new Error("Failed to save initial data after multiple retries.");
-                        }
-                        renderToolGrid();
-                    } catch (e) {
-                        console.error("Error creating initial document:", e);
-                        showNotification("Initialization Error", "Failed to create initial database record.", true);
-                    }
-                }
-            }, (error) => {
-                console.error("Firestore onSnapshot error:", error);
-                showNotification("Data Error", "Failed to listen for real-time link updates.", true);
-            });
-        }
-
-        window.onload = initializeFirebase;
+        // Start rendering when the page loads
+        window.onload = renderToolGrid;
     </script>
 </body>
 </html>
